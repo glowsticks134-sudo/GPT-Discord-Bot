@@ -27,5 +27,6 @@ module.exports = {
   ErrorColor: valueFromEnv('BOT_ERROR_COLOR', fileConfig.ErrorColor) || '#ED4245',
   ClientID: valueFromEnv('DISCORD_CLIENT_ID', fileConfig.ClientID),
   Token: valueFromEnv('DISCORD_BOT_TOKEN', process.env.DISCORD_TOKEN || fileConfig.Token),
-  OpenAIapiKey: valueFromEnv('OPENAI_API_KEY', fileConfig.OpenAIapiKey)
+  OpenAIapiKey: valueFromEnv('OPENAI_API_KEY', fileConfig.OpenAIapiKey),
+  EnablePrivilegedIntents: process.env.ENABLE_PRIVILEGED_INTENTS === 'true'
 };

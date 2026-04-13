@@ -22,6 +22,8 @@
   - `BOT_PREFIX`
   - `BOT_MAIN_COLOR`
   - `BOT_ERROR_COLOR`
+- Optional privileged-intent flag:
+  - `ENABLE_PRIVILEGED_INTENTS=true`
 - If `DISCORD_BOT_TOKEN` is missing, the bot stays alive and logs configuration instructions instead of crashing.
 
 ## Commands
@@ -35,3 +37,4 @@
 - Translation commands return copy-friendly output and attach `translation.txt` with the translated text.
 - AI feature commands include ask, imagine, translate, optimize, summarize, rewrite, brainstorm, and explain.
 - The image generator and auto-moderation systems remain available.
+- Prefix commands and auto-moderation require `ENABLE_PRIVILEGED_INTENTS=true` and the matching privileged intents enabled in the Discord Developer Portal.

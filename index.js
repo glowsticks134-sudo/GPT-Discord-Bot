@@ -11,15 +11,22 @@ const chalk = require('chalk');
 const fs = require('node:fs');
 const config = require('./utils/config');
 
+const intents = [
+  Discord.GatewayIntentBits.Guilds,
+  Discord.GatewayIntentBits.GuildMessages,
+  Discord.GatewayIntentBits.DirectMessages
+];
+
+if (config.EnablePrivilegedIntents) {
+  intents.push(
+    Discord.GatewayIntentBits.GuildMembers,
+    Discord.GatewayIntentBits.MessageContent
+  );
+}
+
 // Discord Client Constructor
 const client = new Discord.Client({
-  intents: [
-    Discord.GatewayIntentBits.Guilds,
-    Discord.GatewayIntentBits.GuildMembers,
-    Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.DirectMessages,
-    Discord.GatewayIntentBits.MessageContent
-  ],
+  intents,
   partials: [
     Discord.Partials.Channel
   ]
@@ -78,6 +85,10 @@ if (!config.Token) {
 } else {
   if (!config.OpenAIapiKey) {
     console.log(chalk.bold.yellowBright('OPENAI_API_KEY is not configured. Discord will connect, but GPT commands will fail until it is added.'));
+  }
+
+  if (!config.EnablePrivilegedIntents) {
+    console.log(chalk.bold.yellowBright('Privileged intents are disabled. Slash commands will work, but prefix commands and auto moderation need ENABLE_PRIVILEGED_INTENTS=true plus Message Content and Server Members intents enabled in Discord Developer Portal.'));
   }
 
   client.login(config.Token).catch((error) => {
