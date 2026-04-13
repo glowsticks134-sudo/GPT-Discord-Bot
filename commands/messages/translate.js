@@ -61,7 +61,13 @@ module.exports = {
                 const answer = response.choices[0].message.content;
                 const usage = response.usage;
 
-                if (answer.length <= 4096) {
+                const copyableAnswer = answer.replaceAll('```', '`​``');
+                const attachment = new Discord.AttachmentBuilder(
+                    Buffer.from(answer, 'utf-8'),
+                    { name: 'translation.txt' }
+                );
+
+                if (copyableAnswer.length <= 3900) {
 
                     const embed = new Discord.EmbedBuilder()
                         .setColor(config.MainColor)
@@ -69,20 +75,16 @@ module.exports = {
                             name: question.length > 256 ? question.substring(0, 253) + "..." : question,
                             iconURL: message.author.displayAvatarURL()
                         })
-                        .setDescription(answer)
+                        .setDescription(`Copyable translation:\n\`\`\`\n${copyableAnswer}\n\`\`\``)
                         .setFooter({
                             text: `Costs ${func.pricing('gpt-3.5', usage.total_tokens)}`,
                             iconURL: client.user.displayAvatarURL()
                         });
 
-                    await message.reply({ embeds: [embed] });
+                    await message.reply({ embeds: [embed], files: [attachment] });
 
                 } else {
 
-                    const attachment = new Discord.AttachmentBuilder(
-                        Buffer.from(`${question}\n\n${answer}`, 'utf-8'),
-                        { name: 'response.txt' }
-                    );
                     await message.reply({ files: [attachment] });
 
                 };

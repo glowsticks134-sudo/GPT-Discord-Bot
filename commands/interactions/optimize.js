@@ -10,6 +10,7 @@ module.exports = {
     data: new Discord.SlashCommandBuilder()
         .setName("optimize")
         .setDescription("Optimizes your imaginations to get better response with draw!")
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName("prompt")
             .setDescription("What is your imagine?")
@@ -17,7 +18,7 @@ module.exports = {
         )
         .addStringOption(option => option
             .setName('ephemeral')
-            .setDescription('Hides the bot\'s reply from others. (Default: Disable)')
+            .setDescription('Hides the bot\'s reply from others. (Default: Enable)')
             .addChoices(
                 {
                     name: 'Enable',
@@ -33,7 +34,7 @@ module.exports = {
     async execute(client, interaction) {
 
         const ephemeralChoice = interaction.options.getString('ephemeral');
-        const ephemeral = ephemeralChoice === 'Enable' ? true : false;
+        const ephemeral = ephemeralChoice === 'Disable' ? false : true;
         await interaction.deferReply({ ephemeral: ephemeral });
 
         const openai = new openAI.OpenAI({ apiKey: config.OpenAIapiKey });

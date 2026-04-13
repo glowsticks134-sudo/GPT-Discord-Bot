@@ -10,6 +10,7 @@ module.exports = {
     data: new Discord.SlashCommandBuilder()
         .setName("translate")
         .setDescription("Translate your texts from any language to any language!")
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName("prompt")
             .setDescription("What is your text?")
@@ -22,7 +23,7 @@ module.exports = {
         )
         .addStringOption(option => option
             .setName('ephemeral')
-            .setDescription('Hides the bot\'s reply from others. (Default: Disable)')
+            .setDescription('Hides the bot\'s reply from others. (Default: Enable)')
             .addChoices(
                 {
                     name: 'Enable',
@@ -38,7 +39,7 @@ module.exports = {
     async execute(client, interaction) {
 
         const ephemeralChoice = interaction.options.getString('ephemeral');
-        const ephemeral = ephemeralChoice === 'Enable' ? true : false;
+        const ephemeral = ephemeralChoice === 'Disable' ? false : true;
         await interaction.deferReply({ ephemeral: ephemeral });
 
         const openai = new openAI.OpenAI({ apiKey: config.OpenAIapiKey });
@@ -75,7 +76,13 @@ module.exports = {
             const answer = response.choices[0].message.content;
             const usage = response.usage;
 
-            if (answer.length <= 4096) {
+            const copyableAnswer = answer.replaceAll('```', '`​``');
+            const attachment = new Discord.AttachmentBuilder(
+                Buffer.from(answer, 'utf-8'),
+                { name: 'translation.txt' }
+            );
+
+            if (copyableAnswer.length <= 3900) {
 
                 const embed = new Discord.EmbedBuilder()
                     .setColor(config.MainColor)
@@ -83,20 +90,16 @@ module.exports = {
                         name: question.length > 256 ? question.substring(0, 253) + "..." : question,
                         iconURL: interaction.user.displayAvatarURL()
                     })
-                    .setDescription(answer)
+                    .setDescription(`Copyable translation:\n\`\`\`\n${copyableAnswer}\n\`\`\``)
                     .setFooter({
                         text: `Costs ${func.pricing('gpt-3.5', usage.total_tokens)}`,
                         iconURL: client.user.displayAvatarURL()
                     });
 
-                await interaction.editReply({ embeds: [embed] });
+                await interaction.editReply({ embeds: [embed], files: [attachment] });
 
             } else {
 
-                const attachment = new Discord.AttachmentBuilder(
-                    Buffer.from(`${question}\n\n${answer}`, 'utf-8'),
-                    { name: 'response.txt' }
-                );
                 await interaction.editReply({ files: [attachment] });
 
             };

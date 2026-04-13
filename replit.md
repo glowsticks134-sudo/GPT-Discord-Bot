@@ -27,3 +27,9 @@
 ## Commands
 - Start bot: `npm start`
 - Register slash commands after adding token/client ID: `node register.js`
+
+## Discord Behavior
+- The bot listens for commands in both servers and direct messages.
+- Slash command responses default to hidden/private unless the user explicitly chooses the public option.
+- Prefix commands used in a server are routed to the user's DMs and the original command message is deleted when possible.
+- Translation commands return copy-friendly output and attach `translation.txt` with the translated text.

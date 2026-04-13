@@ -12,10 +12,10 @@ const conversations = new Map();
 
 module.exports = async (client, message) => {
 
-    if (message.channel.type === Discord.ChannelType.DM || message.author.bot || message.system) return;
+    if (message.author.bot || message.system) return;
 
     // Auto Moderation
-    if (moderation.State && !moderation.IgnoredChannels.includes(message.channelId) && !moderation.IgnoredUsers.includes(message.author.id)) {
+    if (message.guild && moderation.State && !moderation.IgnoredChannels.includes(message.channelId) && !moderation.IgnoredUsers.includes(message.author.id)) {
 
         const logChannel = client.channels.cache.get(moderation.LogChannel);
 
@@ -252,7 +252,7 @@ module.exports = async (client, message) => {
     };
 
     // ChatBot
-    if (chatbot.State && chatbot.ChatBotChannel === message.channelId && !chatbot.IgnoredUsers.includes(message.author.id)) {
+    if (message.guild && chatbot.State && chatbot.ChatBotChannel === message.channelId && !chatbot.IgnoredUsers.includes(message.author.id)) {
 
         await message.channel.sendTyping();
 
@@ -401,7 +401,7 @@ module.exports = async (client, message) => {
             "ReadMessageHistory"
         ];
 
-        if (!message.channel.permissionsFor(message.guild.members.me).has(neededPermissions)) return;
+        if (message.guild && !message.channel.permissionsFor(message.guild.members.me).has(neededPermissions)) return;
 
         const args = message.content.slice(config.Prefix.length).split(/ +/);
         const cmd = args.shift().toLowerCase();
@@ -410,7 +410,17 @@ module.exports = async (client, message) => {
         if (command) {
 
             try {
-                command.execute(client, message, args, cmd);
+                if (message.guild) {
+                    const dmChannel = await message.author.createDM();
+                    const privateMessage = Object.create(message);
+                    privateMessage.channel = dmChannel;
+                    privateMessage.reply = (options) => dmChannel.send(options);
+
+                    await message.delete().catch(() => null);
+                    await command.execute(client, privateMessage, args, cmd);
+                } else {
+                    await command.execute(client, message, args, cmd);
+                }
             } catch (error) {
                 console.error(chalk.bold.redBright(error));
             };

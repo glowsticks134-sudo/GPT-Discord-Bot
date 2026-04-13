@@ -10,6 +10,7 @@ module.exports = {
     data: new Discord.SlashCommandBuilder()
         .setName("ask")
         .setDescription("Answers your questions!")
+        .setDMPermission(true)
         .addStringOption(option => option
             .setName("prompt")
             .setDescription("What is your question?")
@@ -47,7 +48,7 @@ module.exports = {
         )
         .addStringOption(option => option
             .setName('ephemeral')
-            .setDescription('Hides the bot\'s reply from others. (Default: Disable)')
+            .setDescription('Hides the bot\'s reply from others. (Default: Enable)')
             .addChoices(
                 {
                     name: 'Enable',
@@ -64,7 +65,7 @@ module.exports = {
     async execute(client, interaction) {
 
         const ephemeralChoice = interaction.options.getString('ephemeral');
-        const ephemeral = ephemeralChoice === 'Enable' ? true : false;
+        const ephemeral = ephemeralChoice === 'Disable' ? false : true;
 
         await interaction.deferReply({ ephemeral: ephemeral });
 

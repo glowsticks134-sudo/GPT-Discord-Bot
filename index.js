@@ -17,7 +17,11 @@ const client = new Discord.Client({
     Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.GuildMembers,
     Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.DirectMessages,
     Discord.GatewayIntentBits.MessageContent
+  ],
+  partials: [
+    Discord.Partials.Channel
   ]
 });
 
