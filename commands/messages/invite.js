@@ -3,39 +3,23 @@ const config = require('../../utils/config');
 
 module.exports = {
     name: "Invite",
-    aliases: ["Inv", "AddBot"],
-    description: "Get a link to invite this bot to your server.",
+    aliases: ["Inv"],
+    description: "Get a link to add this bot to your account and use it anywhere.",
 
     async execute(client, message, args, cmd) {
 
         await message.channel.sendTyping();
 
-        const inviteURL = client.generateInvite({
-            scopes: [
-                Discord.OAuth2Scopes.Bot,
-                Discord.OAuth2Scopes.ApplicationsCommands
-            ],
-            permissions: [
-                Discord.PermissionFlagsBits.ViewChannel,
-                Discord.PermissionFlagsBits.SendMessages,
-                Discord.PermissionFlagsBits.SendMessagesInThreads,
-                Discord.PermissionFlagsBits.EmbedLinks,
-                Discord.PermissionFlagsBits.ReadMessageHistory,
-                Discord.PermissionFlagsBits.ManageMessages,
-                Discord.PermissionFlagsBits.KickMembers,
-                Discord.PermissionFlagsBits.BanMembers,
-                Discord.PermissionFlagsBits.ModerateMembers,
-                Discord.PermissionFlagsBits.UseExternalEmojis
-            ]
-        });
+        const clientId = client.application.id;
+        const inviteURL = `https://discord.com/oauth2/authorize?client_id=${clientId}&integration_type=1&scope=applications.commands`;
 
         const embed = new Discord.EmbedBuilder()
             .setColor(config.MainColor)
             .setAuthor({
-                name: `Invite ${client.user.username}`,
+                name: `Add ${client.user.username} to your account`,
                 iconURL: client.user.displayAvatarURL({ size: 1024 })
             })
-            .setDescription(`Click the button below to invite **${client.user.username}** to your server!\n\nThe bot will request the permissions it needs to run all its features including AI chat, image generation, and auto-moderation.`)
+            .setDescription(`Click the button below to add **${client.user.username}** directly to your Discord account!\n\nOnce added, you can use the bot anywhere — in any server, DMs, or group chats — without needing to add it to a server.`)
             .setThumbnail(client.user.displayAvatarURL({ size: 1024 }))
             .setFooter({
                 text: `Commanded by ${message.author.tag}`,
@@ -45,7 +29,7 @@ module.exports = {
         const row = new Discord.ActionRowBuilder()
             .addComponents(
                 new Discord.ButtonBuilder()
-                    .setLabel('Invite Bot')
+                    .setLabel('Add to Account')
                     .setStyle(Discord.ButtonStyle.Link)
                     .setURL(inviteURL)
                     .setEmoji('🤖')
