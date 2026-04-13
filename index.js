@@ -9,7 +9,7 @@
 const Discord = require('discord.js');
 const chalk = require('chalk');
 const fs = require('node:fs');
-const config = require('./configs/config.json');
+const config = require('./utils/config');
 
 // Discord Client Constructor
 const client = new Discord.Client({
@@ -66,5 +66,19 @@ process.on('uncaughtExceptionMonitor', (err, origin) => {
   console.log(err?.stack, origin);
 });
 
-// Discord Client login
-client.login(config.Token);
+if (!config.Token) {
+  console.log(chalk.bold.yellowBright('Discord bot configuration is pending.'));
+  console.log('Add DISCORD_BOT_TOKEN as a Replit secret to connect the bot to Discord.');
+  console.log('Optional: add OPENAI_API_KEY for GPT commands and DISCORD_CLIENT_ID for slash command registration.');
+  setInterval(() => null, 60 * 60 * 1000);
+} else {
+  if (!config.OpenAIapiKey) {
+    console.log(chalk.bold.yellowBright('OPENAI_API_KEY is not configured. Discord will connect, but GPT commands will fail until it is added.'));
+  }
+
+  client.login(config.Token).catch((error) => {
+    console.error(chalk.bold.redBright('Discord login failed.'));
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const fs = require('node:fs');
 const func = require('../../utils/functions');
 const settings = require('../../utils/settings');
-const config = require('../../configs/config.json');
+const config = require('../../utils/config');
 
 module.exports = {
     name: "Translate",
